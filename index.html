@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tokyo Hub — Family Itinerary</title>
+<meta name="description" content="Cultural Compass Adventures · Tokyo Hub, October 20–26, 2026. Day-by-day meeting points, activities, pricing, and maps for worldschooling families.">
+<meta property="og:title" content="Tokyo Hub — Family Itinerary">
+<meta property="og:description" content="Cultural Compass Adventures · October 20–26, 2026">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='46' fill='%23FBF6EC' stroke='%23C0552E' stroke-width='6'/%3E%3Cpath d='M50 20 L60 50 L50 80 L40 50 Z' fill='%23C0552E'/%3E%3Ccircle cx='50' cy='50' r='6' fill='%23FBF6EC'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700;9..144,900&family=Karla:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+<style>
+    :root {
+        --paper: #fbf6ec;
+        --paper-deep: #f1e7d3;
+        --card: #fffdf8;
+        --ink: #23262b;
+        --ink-soft: #5b5f58;
+        --rule: #e4d8be;
+        --accent: #c0552e;
+        --accent-deep: #9c4223;
+        --accent-soft: #f6e3d6;
+        --teal: #2e6e63;
+        --teal-soft: #e2efe9;
+        --gold: #a97a1f;
+        --gold-soft: #f5ecd8;
+        --red: #a8402c;
+        --red-soft: #f7e4de;
+        --shadow: 0 12px 28px -16px rgba(35,38,43,0.28);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+        font-family: 'Karla', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        line-height: 1.65;
+        color: var(--ink);
+        margin: 0;
+        padding: 0;
+        background:
+            radial-gradient(circle at 1px 1px, rgba(35,38,43,0.06) 1px, transparent 0) 0 0/22px 22px,
+            var(--paper);
+    }
+
+    a { color: var(--accent-deep); text-decoration: none; font-weight: 700; border-bottom: 1.5px solid var(--accent-soft); transition: border-color .15s ease, color .15s ease; }
+    a:hover { border-color: var(--accent-deep); color: var(--accent); }
+
+    /* ---------- Hero ---------- */
+    .hero {
+        background: linear-gradient(165deg, #2a2f2c 0%, #23262b 55%, #33291f 100%);
+        color: #f6efe0;
+        padding: 56px 20px 40px;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+        border-bottom: 6px solid var(--accent);
+    }
+    .hero::before {
+        content: "";
+        position: absolute; inset: 0;
+        background-image: radial-gradient(circle, rgba(246,239,224,0.09) 1px, transparent 1px);
+        background-size: 26px 26px;
+        opacity: 0.6;
+    }
+    .hero-inner { position: relative; max-width: 850px; margin: 0 auto; }
+    .hero-eyebrow {
+        display: inline-flex; align-items: center; gap: 8px;
+        font-family: 'Karla', sans-serif; font-weight: 700; font-size: 0.78em;
+        letter-spacing: 0.16em; text-transform: uppercase;
+        color: #e7b98f; margin-bottom: 14px;
+    }
+    .hero-eyebrow svg { width: 16px; height: 16px; }
+    .hero h1 {
+        font-family: 'Fraunces', Georgia, serif;
+        font-weight: 700;
+        font-size: clamp(2.1em, 5vw, 3.1em);
+        line-height: 1.08;
+        margin: 0 0 14px;
+        letter-spacing: -0.01em;
+    }
+    .hero .subtitle {
+        font-family: 'Karla', sans-serif;
+        font-weight: 500;
+        font-size: 1.05em;
+        color: #d8cfba;
+        letter-spacing: 0.01em;
+    }
+    .hero .subtitle strong { color: #f6efe0; font-weight: 700; }
+
+    .container { max-width: 850px; margin: auto; padding: 0 20px 60px; }
+
+    /* ---------- Tabs / day nav ---------- */
+    .tabs-wrap {
+        position: sticky; top: 0; z-index: 20;
+        background: var(--paper);
+        padding-top: 18px;
+        margin-bottom: 26px;
+        border-bottom: 2px solid var(--rule);
+    }
+    .tabs {
+        display: flex;
+        gap: 8px;
+        overflow-x: auto;
+        padding-bottom: 14px;
+        scroll-snap-type: x proximity;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: thin;
+        scrollbar-color: var(--rule) transparent;
+    }
+    .tabs::-webkit-scrollbar { height: 6px; }
+    .tabs::-webkit-scrollbar-thumb { background: var(--rule); border-radius: 4px; }
+
+    .tab {
+        scroll-snap-align: start;
+        flex: 0 0 auto;
+        display: flex; flex-direction: column; gap: 2px;
+        cursor: pointer;
+        background: var(--card);
+        border: 1.5px solid var(--rule);
+        border-radius: 10px;
+        padding: 8px 14px;
+        min-width: 108px;
+        transition: transform .15s ease, border-color .15s ease, background .15s ease, box-shadow .15s ease;
+    }
+    .tab:hover { border-color: var(--accent); transform: translateY(-2px); }
+    .tab .tab-day {
+        font-family: 'Karla', sans-serif; font-weight: 700; font-size: 0.68em;
+        letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-soft);
+    }
+    .tab .tab-date {
+        font-family: 'Fraunces', serif; font-weight: 600; font-size: 1.15em; color: var(--ink);
+    }
+    .tab .tab-label {
+        font-family: 'Karla', sans-serif; font-weight: 500; font-size: 0.82em; color: var(--ink-soft);
+        white-space: nowrap;
+    }
+    .tab.active {
+        background: var(--ink);
+        border-color: var(--ink);
+        box-shadow: var(--shadow);
+        transform: translateY(-2px);
+    }
+    .tab.active .tab-day { color: #e7b98f; }
+    .tab.active .tab-date { color: #f6efe0; }
+    .tab.active .tab-label { color: #cfc8b6; }
+
+    /* ---------- Content ---------- */
+    .content { display: none; }
+    .content.active { display: block; animation: fadeIn .35s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+    .content > .card {
+        background: var(--card);
+        border: 1px solid var(--rule);
+        border-radius: 14px;
+        padding: 28px 26px 8px;
+        box-shadow: var(--shadow);
+    }
+
+    h1 { color: var(--ink); }
+    h2 {
+        font-family: 'Fraunces', Georgia, serif;
+        font-weight: 700;
+        color: var(--ink);
+        border-left: none;
+        padding-left: 0;
+        margin: 0 0 18px;
+        font-size: 1.5em;
+        position: relative;
+        padding-bottom: 10px;
+    }
+    h2::after {
+        content: "";
+        display: block;
+        width: 46px; height: 3px;
+        background: var(--accent);
+        margin-top: 10px;
+        border-radius: 2px;
+    }
+    .content > .card > h2:not(:first-child) { margin-top: 8px; }
+
+    h3.activity-name {
+        font-family: 'Fraunces', Georgia, serif;
+        font-weight: 600;
+        color: var(--ink);
+        margin-bottom: 4px;
+        font-size: 1.12em;
+    }
+
+    .meta-info {
+        background: var(--teal-soft);
+        padding: 16px 18px;
+        border-radius: 10px;
+        border-left: 4px solid var(--teal);
+        margin-bottom: 22px;
+    }
+    .meta-info strong { color: var(--teal); }
+
+    .day-map { height: 320px; width: 100%; border-radius: 10px; margin-bottom: 6px; border: 1px solid var(--rule); }
+    .map-credit { font-size: 0.8em; color: var(--ink-soft); text-align: center; margin-bottom: 22px; }
+
+    .lunch-box { padding: 14px 16px; border-radius: 10px; margin-bottom: 22px; font-size: 0.98em; }
+    .lunch-flag { background: var(--gold-soft); border-left: 4px solid var(--gold); }
+    .lunch-set { background: var(--teal-soft); border-left: 4px solid var(--teal); }
+
+    .flag-note { background: var(--red-soft); border-left: 4px solid var(--red); padding: 10px 14px; border-radius: 8px; font-size: 0.88em; margin-top: 8px; color: var(--red); }
+    .verified-note { background: var(--teal-soft); border-left: 4px solid var(--teal); padding: 10px 14px; border-radius: 8px; font-size: 0.85em; margin-top: 8px; color: var(--teal); }
+
+    .price-tag {
+        display: inline-block;
+        background: var(--gold-soft);
+        color: var(--gold);
+        padding: 3px 10px;
+        border-radius: 999px;
+        font-size: 0.88em;
+        font-weight: 700;
+        margin-top: 5px;
+    }
+
+    .activity-block { margin-bottom: 28px; padding-bottom: 20px; border-bottom: 1px dashed var(--rule); }
+    .activity-block:last-child { border-bottom: none; }
+
+    .subway { font-size: 0.9em; color: var(--ink-soft); }
+
+    ul { padding-left: 20px; }
+    li { margin-bottom: 6px; }
+
+    .site-footer {
+        max-width: 850px; margin: 10px auto 50px; padding: 0 20px;
+        text-align: center; color: var(--ink-soft); font-size: 0.88em;
+    }
+    .site-footer .mark { color: var(--accent); }
+
+    @media (max-width: 600px) {
+        .content > .card { padding: 22px 18px 4px; border-radius: 12px; }
+        .hero { padding: 42px 18px 32px; }
+    }
+</style>
+</head>
+<body>
+
+<header class="hero">
+    <div class="hero-inner">
+        <span class="hero-eyebrow">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M15 9l-3 6-3-2 3-6z" fill="currentColor" stroke="none"/></svg>
+            Cultural Compass Adventures
+        </span>
+        <h1>Tokyo Hub<br>Family Itinerary</h1>
+        <p class="subtitle">A day-by-day guide for our week together · <strong>October 20–26, 2026</strong></p>
+    </div>
+</header>
+
+<div class="container">
+
+    <div class="tabs-wrap">
+        <div class="tabs">
+            <div class="tab active" onclick="showTab('day1', event)">
+                <span class="tab-day">Day 1</span><span class="tab-date">Oct 20</span><span class="tab-label">Kasai Park</span>
+            </div>
+            <div class="tab" onclick="showTab('day2', event)">
+                <span class="tab-day">Day 2</span><span class="tab-date">Oct 21</span><span class="tab-label">Palace &amp; Shinjuku</span>
+            </div>
+            <div class="tab" onclick="showTab('day3', event)">
+                <span class="tab-day">Day 3</span><span class="tab-date">Oct 22</span><span class="tab-label">DisneySea</span>
+            </div>
+            <div class="tab" onclick="showTab('day4', event)">
+                <span class="tab-day">Day 4</span><span class="tab-date">Oct 23</span><span class="tab-label">Shibuya</span>
+            </div>
+            <div class="tab" onclick="showTab('day5', event)">
+                <span class="tab-day">Day 5</span><span class="tab-date">Oct 24</span><span class="tab-label">Asakusa</span>
+            </div>
+            <div class="tab" onclick="showTab('day6', event)">
+                <span class="tab-day">Day 6</span><span class="tab-date">Oct 25</span><span class="tab-label">Kawasaki</span>
+            </div>
+            <div class="tab" onclick="showTab('day7', event)">
+                <span class="tab-day">Day 7</span><span class="tab-date">Oct 26</span><span class="tab-label">Gardens &amp; Tower</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- DAY 1 -->
+    <div id="day1" class="content active"><div class="card">
+        <h2>Kasai-Rinkai Park (Tuesday, October 20)</h2>
+        <div class="meta-info">
+            <strong>Meeting Time:</strong> 11:00 AM<br>
+            <strong>Meeting Point:</strong> Kasai-Rinkai Park Playground — <a href="https://www.google.com/maps/search/Kasai-Rinkai+Park+Playground" target="_blank">open in Google Maps</a><br>
+            <span class="subway"><strong>Nearest Station:</strong> Kasai-Rinkai-koen Station (JR Keiyo Line)</span>
+        </div>
+        <div id="day1-map" class="day-map"></div>
+        <p class="map-credit">Map data © <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap contributors</a> — pins are approximate; use the Google Maps links below for exact routing.</p>
+        <div class="lunch-box lunch-set">🍱 <strong>Lunch:</strong> Picnic lunch or buy in the park — bring your own, or grab something from the on-site Starbucks, PARKLIFE CAFE & RESTAURANT, or the BBQ Square (reservation required for BBQ grills) near the station.</div>
+
+        <p style="color:var(--ink-soft); font-style:italic;">This is an open, choose-your-own-adventure day — the whole park is free to enter and explore, and everything below is optional. Below is the full menu of what's here so the group can decide in the moment.</p>
+
+        <h2>Free to Explore (No Ticket Needed)</h2>
+        <div class="activity-block">
+            <h3 class="activity-name">Kasai-Rinkai Park (grounds, lawns & playground)</h3>
+            <p>Our easy, arrival-day hangout — a huge waterfront park with wide lawns, a big playground, and views of Tokyo Bay. Plenty of room for kids to run while parents settle in and start connecting.</p>
+            <p class="price-tag">Free | Grounds open 24 hours</p>
+        </div>
+        <div class="activity-block">
+            <h3 class="activity-name">Bird Sanctuary</h3>
+            <p>A quiet nature reserve covering about a third of the park, with two ponds, observation buildings, and viewing windows onto migratory and resident water birds. A calm counterpoint to the busier parts of the park.</p>
+            <p class="price-tag">Free | Observation buildings roughly follow park facility hours (~9:00 AM–5:00 PM)</p>
+            <p><a href="https://www.google.com/maps/search/?api=1&query=Kasai+Rinkai+Bird+Sanctuary" target="_blank">📍 View on Google Maps</a></p>
+        </div>
+        <div class="activity-block">
+            <h3 class="activity-name">Kasai Marine Park Beach (Nishi Nagisa)</h3>
+            <p>A coastal walking area and artificial sandy tidal zone right along Tokyo Bay — good for a barefoot wander or just watching the water.</p>
+            <p class="price-tag">Free | Open access, no set hours</p>
+            <p><a href="https://www.google.com/maps/search/?api=1&query=Kasai+Marine+Park+Beach" target="_blank">📍 View on Google Maps</a></p>
+        </div>
+        <div class="activity-block">
+            <h3 class="activity-name">Crystal View Rest House</h3>
+            <p>A striking glass-walled observation building on the park's highest point, with panoramic 2nd-floor views toward Tokyo Bay and, on clear days, the Boso Peninsula. Good shaded resting spot with a small café.</p>
+            <p class="price-tag">Free | 9:00 AM–5:00 PM</p>
+            <p><a href="https://www.google.com/maps/search/?api=1&query=Crystal+View+Rest+House" target="_blank">📍 View on Google Maps</a></p>
+        </div>
+        <div class="activity-block">
+            <h3 class="activity-name">Canoe Slalom Centre (viewing only)</h3>
+            <p>A former Tokyo 2020 Olympic venue right next to the park — a 200m artificial white-water course. Fun to watch from the 2nd-floor terrace even without booking anything; canoe/rafting sessions can be booked separately online if anyone's interested.</p>
+            <p class="price-tag">Free to view from public areas | 9:00 AM–5:00 PM daily</p>
+            <div class="flag-note">⚠️ If anyone wants to actually book a canoe/rafting session (not just watch), that needs a separate online reservation — not included in this itinerary.</div>
+            <p><a href="https://www.google.com/maps/search/?api=1&query=Canoe+Slalom+Centre" target="_blank">📍 View on Google Maps</a></p>
+        </div>
+
+        <h2>Paid Activities</h2>
+        <div class="activity-block">
+            <h3 class="activity-name">Tokyo Sea Life Park (Aquarium)</h3>
+            <p>Known for its glass-dome entrance and a large tuna tank where the fish swim in a continuous ring overhead — a favorite with younger kids.</p>
+            <p class="price-tag">General: ¥700 | Ages 65+: ¥350 | Junior high (outside Tokyo): ¥250 | Elementary & younger, and Tokyo junior high students: Free</p>
+            <p class="price-tag">Hours: 9:30 AM–5:00 PM (last entry 4:00 PM)</p>
+            <div class="verified-note">✅ Confirmed pricing and hours. Also confirmed: it's closed every Wednesday — not a concern for our Tuesday visit, but worth knowing if this day ever moves.</div>
+        </div>
+        <div class="activity-block">
+            <h3 class="activity-name">Diamond and Flower Ferris Wheel</h3>
+            <p>One of the largest Ferris wheels in Japan (117m), right next to the aquarium — a slow 17-minute rotation with great bay and skyline views. Great low-key activity for mixed ages.</p>
+            <p class="price-tag">Ages 3+ (standard rate): ¥800 | Ages 2 & under: Free | Seniors 70+: ¥400 | Disabled + one attendant: ¥350 | 10% off with a same-day Sea Life Park ticket</p>
+            <p class="price-tag">Hours: 10:00 AM–7:00 PM on weekdays (our visit is a Tuesday), 10:00 AM–8:00 PM weekends/holidays</p>
+            <div class="verified-note">✅ Confirmed — the ¥800 rate functions as the general/adult price; there's no separate higher adult tier. Senior discount kicks in at 70+, not 65+.</div>
+        </div>
+        <div class="activity-block">
+            <h3 class="activity-name">Park Train</h3>
+            <p>A fun, low-effort way to see more of the park — a locomotive-shaped ride that loops slowly around the grounds for about 25 minutes. Nice option for anyone who's tired of walking.</p>
+            <p class="price-tag">Approx. ¥300 per ride</p>
+            <div class="flag-note">⚠️ Couldn't confirm exact operating hours for the Park Train from available sources — it generally runs during daytime park hours, but worth checking the on-site schedule board when we arrive rather than promising a specific time to families.</div>
+        </div>
+        <p><a href="https://www.google.com/maps/search/Kasai+Rinkai+Park" target="_blank">📍 View Kasai-Rinkai Park on Google Maps</a></p>
+    </div></div>
+
+    <!-- DAY 2 -->
+    <div id="day2" class="content"><div class="card">
+        <h2>Imperial Palace & Shinjuku Park (Wednesday, October 21)</h2>
+        <div class="meta-info">
+            <strong>Meeting Time:</strong> 9:35 AM (tour departs 10:00 AM sharp — no late entry)<br>
+            <strong>Meeting Point:</strong> Kikyo-mon Gate — <a href="https://www.google.com/maps/search/?api=1&query=Kikyo-mon+Gate+Imperial+Palace" target="_blank">open in Google Maps</a><br>
+            <span class="subway"><strong>Nearest Station:</strong> Otemachi Station (Tokyo Metro Chiyoda, Marunouchi & Tozai Lines; Toei Mita Line), then ~5–10 min walk to Kikyo-mon Gate</span>
+        </div>
+        <div id="day2-map" class="day-map"></div>
+        <p class="map-credit">Map data © <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap contributors</a> — pins are approximate; use the Google Maps links below for exact routing.</p>
+
+        <div class="verified-note">✅ Moved from Oct 26 to Oct 21 to fix a real conflict: the Imperial Household Agency's official guided tour only runs Tuesday–Saturday, and Oct 26 was a Monday. Wednesday keeps the 10:00 AM slot available.</div>
+
+        <div class="flag-note">
+            🎫 <strong>Reserve group tickets here:</strong> <a href="https://sankan.kunaicho.go.jp/english/" target="_blank">sankan.kunaicho.go.jp/english</a> (booking guide: <a href="https://sankan.kunaicho.go.jp/english/guide/koukyo.html" target="_blank">koukyo.html</a>). This is free, but requires advance online registration — one adult can register as the "group representative" and enter everyone else's name, nationality, and age on the same application. Every attendee needs to bring their actual passport (no photocopies) to check in. The booking window opens roughly a month or two ahead of the visit date and closes a few days before — the exact dates shift, so check the site directly rather than assuming a fixed number of days. <strong>This should be booked as soon as the window opens for October, since slots for the 10:00 AM tour can fill.</strong>
+        </div>
+
+        <div class="flag-note">
+            📝 <strong>To-do — build a Google Form to collect each attendee's info for the tour application:</strong>
+            <ul style="margin:6px 0 0 0; padding-left:18px;">
+                <li>Citizenship ("Foreigner" or "Japanese")</li>
+                <li>Name (First)</li>
+                <li>Name (Family)</li>
+                <li>Age</li>
+                <li>Nationality</li>
+            </ul>
+            One response per person, collected from every registered family before you (as group representative) submit the official application.
+            <br><br>⚠️ Worth double-checking against the actual Kunaicho application screen before finalizing the form: my research on their process only confirmed "nationality, name, age" as required fields for accompanying persons — I couldn't verify a separate "Foreigner/Japanese" citizenship toggle. If both fields do appear on the real form, keep them; if not, "Nationality" alone may cover it and you can drop the redundant field.
+        </div>
+
+        <div class="lunch-box lunch-flag">🍱 <strong>Lunch:</strong> Not yet arranged — this is our closing-week send-off day, so a group lunch or farewell meal near the Palace or in Shinjuku could be a nice touch worth planning intentionally.</div>
+
+        <h2>Activity Details</h2>
+        <div class="activity-block">
+            <h3 class="activity-name">Imperial Palace Official Guided Tour (10:00 AM)</h3>
+            <p>A free, ~75-minute walking tour run by the Imperial Household Agency through parts of the inner palace grounds that are otherwise closed to the public — including the Fujimi-yagura watchtower, the Kyuden Totei Plaza (where the Emperor delivers the New Year's address), the Chowaden Reception Hall, and Nijubashi Bridge. It's a viewing tour from the outside (no entry into buildings), with English audio-guide support.</p>
+            <p class="price-tag">Free | Reservation required (see box above) | ID: original passport for every attendee</p>
+            <div class="flag-note">⚠️ Arrive with real margin — security screening and check-in at Kikyo-mon Gate takes time, and the tour starts on the dot. Build in extra buffer for a group our size.</div>
+        </div>
+        <div class="activity-block">
+            <h3 class="activity-name">Shinjuku Chuo Park</h3>
+            <p>A large, green urban park in the shadow of Shinjuku's skyscrapers, with strong playgrounds — a good stretch of unstructured play time after the tour wraps up.</p>
+            <p class="price-tag">Free</p>
+            <span class="subway"><strong>Nearest Station:</strong> Tochomae Station (Toei Oedo Line)</span>
+        </div>
+        <p><a href="https://www.google.com/maps/search/Shinjuku+Chuo+Park" target="_blank">📍 View Shinjuku Chuo Park on Google Maps</a></p>
+    </div></div>
+
+    <!-- DAY 3 -->
+    <div id="day3" class="content"><div class="card">
+        <h2>Tokyo DisneySea (Thursday, October 22)</h2>
+        <div class="meta-info">
+            <strong>Meeting Time:</strong> 8:30 – 8:45 AM<br>
+            <strong>Meeting Point:</strong> DisneySea Entrance Plaza — <a href="https://www.google.com/maps/search/Tokyo+DisneySea+Entrance+Plaza" target="_blank">open in Google Maps</a><br>
+            <span class="subway"><strong>Nearest Station:</strong> Maihama Station (JR Keiyo Line), then a short walk or free Disney Resort Line monorail to the park entrance</span>
+        </div>
+        <div id="day3-map" class="day-map"></div>
+        <p class="map-credit">Map data © <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap contributors</a> — pins are approximate; use the Google Maps links below for exact routing.</p>
+        <div class="lunch-box lunch-set">🍱 <strong>Lunch:</strong> Handled inside the park — DisneySea has restaurants and food carts throughout, so each family is on their own for meals. No group reservation needed.</div>
+
+        <h2>Activity Details</h2>
+        <div class="activity-block">
+            <h3 class="activity-name">Tokyo DisneySea</h3>
+            <p>A full day at Disney's most distinctive park — nautical and exploration-themed "ports" rather than classic Disneyland lands, including the newer Fantasy Springs area. A self-directed day: families move at their own pace and regroup as they'd like.</p>
+            <p class="price-tag">1-Day Passport (confirmed for Oct 22, 2026): Adult (18+) ¥10,900 | Junior (12–17) ¥9,000 | Child (4–11) ¥5,600 | Ages 3 & under: Free</p>
+            <div class="verified-note">✅ Confirmed — this is the top end of the date-based pricing tiers, so it looks like Oct 22 is a peak-demand day. Good to know for setting expectations with families, since it's noticeably more than the low-season rate.</div>
+            <div class="flag-note">🎫 <strong>Buy tickets here:</strong> <a href="https://plan.tokyodisneyresort.jp/2/4/8/?lang=en&group=1" target="_blank">plan.tokyodisneyresort.jp</a>. Unlike the Palace tour, this isn't a single group booking, date-based tickets sell out on popular days and each family buys their own passports, so families should be told to book directly and early rather than waiting on a group link.</div>
+        </div>
+        <p><a href="https://www.google.com/maps/search/Tokyo+DisneySea" target="_blank">📍 View Tokyo DisneySea on Google Maps</a></p>
+    </div></div>
+
+    <!-- DAY 4 -->
+    <div id="day4" class="content"><div class="card">
+        <h2>Shibuya & Karaoke Fun (Friday, October 23)</h2>
+        <div class="meta-info">
+            <strong>Meeting Time:</strong> 11:00 AM<br>
+            <strong>Meeting Point:</strong> Shibuya Station, Hachiko Exit — <a href="https://www.google.com/maps/search/Shibuya+Station+Hachiko+Exit" target="_blank">open in Google Maps</a><br>
+            <span class="subway"><strong>Nearest Station:</strong> Shibuya Station (JR Yamanote Line; Tokyo Metro Ginza, Hanzomon & Fukutoshin Lines)</span>
+        </div>
+        <div id="day4-map" class="day-map"></div>
+        <p class="map-credit">Map data © <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap contributors</a> — pins are approximate; use the Google Maps links below for exact routing.</p>
+        <div class="lunch-box lunch-flag">🍱 <strong>Lunch:</strong> Not yet arranged — Shibuya has endless options, but worth deciding on something concrete for the group.</div>
+
+        <h2>Activity Details</h2>
+        <div class="activity-block">
+            <h3 class="activity-name">Shibuya Crossing</h3>
+            <p>The world's busiest pedestrian intersection — genuinely fun to just stand and watch, and a classic "we're really in Tokyo" moment for kids.</p>
+            <p class="price-tag">Free</p>
+        </div>
+        <div class="activity-block">
+            <h3 class="activity-name">Mega Don Quijote</h3>
+            <p>A multi-story discount department store packed with snacks, cosmetics, toys, and novelty items — chaotic in the best way, and a favorite browsing stop for teens especially.</p>
+            <p class="price-tag">Free to browse; purchases at your own discretion</p>
+        </div>
+        <div class="activity-block">
+            <h3 class="activity-name">Karaoke Pasela (Shibuya)</h3>
+            <p>Large private rooms make this a great group activity — everyone piles in, orders snacks and drinks to the room, and takes turns at the mic. Pasela markets itself as family-friendly, with a dedicated kids' menu at some locations.</p>
+            <p class="price-tag">~¥400/30 min per person on weekday daytime rates; closer to ¥580/30 min per person evenings & weekends. Many locations let up to 2 elementary-age kids in free per paying adult, with additional kids at half price.</p>
+            <div class="flag-note">⚠️ Exact per-person rate depends on the day/time booked and current promotions — confirm directly with the Shibuya location before quoting a firm price to families.</div>
+        </div>
+        <p><a href="https://www.google.com/maps/search/Shibuya+Crossing" target="_blank">📍 View Shibuya Crossing on Google Maps</a></p>
+    </div></div>
+
+    <!-- DAY 5 -->
+    <div id="day5" class="content"><div class="card">
+        <h2>Asakusa Cultural Day (Saturday, October 24)</h2>
+        <div class="meta-info">
+            <strong>Meeting Time:</strong> 11:00 AM<br>
+            <strong>Meeting Point:</strong> Asakusa Station — <a href="https://www.google.com/maps/search/Asakusa+Station" target="_blank">open in Google Maps</a><br>
+            <span class="subway"><strong>Nearest Station:</strong> Asakusa Station (Tokyo Metro Ginza Line; Toei Asakusa Line; Tobu Skytree Line)</span>
+        </div>
+        <div id="day5-map" class="day-map"></div>
+        <p class="map-credit">Map data © <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap contributors</a> — pins are approximate; use the Google Maps links below for exact routing.</p>
+        <div class="lunch-box lunch-flag">🍱 <strong>Lunch:</strong> Not yet arranged — Nakamise shopping street has plenty of street food between the two activities, which could work well as a casual group lunch.</div>
+
+        <h2>Activity Details</h2>
+        <div class="activity-block">
+            <h3 class="activity-name">Taikokan (Drum Museum)</h3>
+            <p>A small, hands-on museum on the 4th floor of Miyamoto Unosuke Shoten, a taiko drum maker founded in 1861. About 200 drums are on permanent display — Japanese taiko alongside African, European, and American percussion — and most of them (any marked with a musical note symbol) are fair game to actually play. Great opener for the day since it's genuinely interactive rather than look-but-don't-touch. It's a short walk from Asakusa Station, in the same Nishi-Asakusa neighborhood as our Ganso stop later.</p>
+            <p class="price-tag">Adults ~¥500 | Children ~¥150</p>
+            <p class="price-tag">Hours: 11:00 AM–4:00 PM (last admission 3:00 PM) | Closed Mondays & Tuesdays — not a concern for our Saturday visit</p>
+            <div class="flag-note">⚠️ Sources disagree on exact hours — the museum's own recent posts say 11:00 AM–4:00 PM, while some travel sites still list the older 10:00 AM–5:00 PM. I used the more current one, but worth a quick check of <a href="https://www.miyamoto-unosuke.co.jp/taikokan/" target="_blank">the official site</a> before publishing, since our 11:00 AM meeting time only works if it's really open right at 11.</div>
+            <p><em>Address:</em> 4F, 2-1-1 Nishi-Asakusa, Taito-ku &nbsp;|&nbsp; <span class="subway"><strong>Nearest Station:</strong> Tawaramachi Station (Ginza Line), ~2 min walk</span></p>
+            <p><a href="https://www.google.com/maps/search/?api=1&query=Taikokan+Drum+Museum+Asakusa" target="_blank">📍 View Taikokan on Google Maps</a></p>
+        </div>
+        <div class="activity-block">
+            <h3 class="activity-name">Tokyo Samurai Ninja Museum</h3>
+            <p>A hands-on, guided museum experience where kids (and parents) can try on samurai armor, throw shuriken, and learn some real history behind the pop-culture versions of samurai and ninja.</p>
+            <p class="price-tag">¥3,300 adults | ¥2,700 kids</p>
+            <div class="flag-note">⚠️ Requires online booking — this needs a reservation deadline set well before the hub week.</div>
+        </div>
+        <div class="activity-block">
+            <h3 class="activity-name">Ganso Sample Making</h3>
+            <p>A playful workshop where families make ultra-realistic fake food replicas — the same wax models you see in restaurant window displays across Japan. Sessions run about 60 minutes and make for a genuinely fun keepsake. Located in Kappabashi, "Kitchen Town," a 12–15 min walk from Asakusa Station.</p>
+            <p class="price-tag">~¥2,200–¥3,000 per person, depending on which item you make (e.g., tempura & lettuce runs toward the higher end)</p>
+            <div class="flag-note">⚠️ Price varies by dish — confirm the exact item and price when booking, and note that reservations are required (walk-ins only if slots are open).</div>
+        </div>
+        <p><a href="https://www.google.com/maps/search/Asakusa+Samurai+Ninja+Museum" target="_blank">📍 View Samurai Ninja Museum on Google Maps</a></p>
+    </div></div>
+
+    <!-- DAY 6 -->
+    <div id="day6" class="content"><div class="card">
+        <h2>Kawasaki Heritage & Science Day (Sunday, October 25)</h2>
+        <div class="meta-info">
+            <strong>Meeting Time:</strong> 11:00 AM<br>
+            <strong>Meeting Point:</strong> Nihon Minkaen Entrance — <a href="https://www.google.com/maps/search/Nihon+Minkaen+Kawasaki" target="_blank">open in Google Maps</a><br>
+            <span class="subway"><strong>Nearest Station:</strong> Mukogaoka-Yuen Station (Odakyu Odawara Line), ~15 min walk to the museum</span>
+        </div>
+        <div id="day6-map" class="day-map"></div>
+        <p class="map-credit">Map data © <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap contributors</a> — pins are approximate; use the Google Maps links below for exact routing.</p>
+        <div class="lunch-box lunch-flag">🍱 <strong>Lunch:</strong> Not yet arranged — this is a more residential/suburban area than our other days, so families will need clear guidance on nearby options (or a heads-up to bring food), since there's less to grab on the fly.</div>
+
+        <h2>Heritage & Craft Demos</h2>
+        <div class="activity-block">
+            <h3 class="activity-name">Nihon Minkaen (Open-Air Folk House Museum)</h3>
+            <p>An open-air museum of 25+ preserved Edo-period farmhouses relocated from around Japan, set in a wooded park. Sundays are extra special here — volunteer craftspeople demonstrate traditional skills like straw and bamboo work, weaving, and hearth-fire cooking, so kids get to see (and sometimes try) real historical trades in action.</p>
+            <p class="price-tag">¥550 adults | Free for youth</p>
+            <p><em>Address:</em> 7-1-1 Masugata, Tama-ku, Kawasaki</p>
+        </div>
+        <p><a href="https://www.google.com/maps/search/Nihon+Minkaen+Kawasaki" target="_blank">📍 View Nihon Minkaen on Google Maps</a></p>
+    </div></div>
+
+    <!-- DAY 7 -->
+    <div id="day7" class="content"><div class="card">
+        <h2>Gardens, Science & Skyline (Monday, October 26)</h2>
+        <div class="meta-info">
+            <strong>Meeting Time:</strong> 11:00 AM<br>
+            <strong>Meeting Point:</strong> Hamarikyu Gardens, Otemon Gate — <a href="https://www.google.com/maps/search/Hamarikyu+Gardens+Otemon+Gate" target="_blank">open in Google Maps</a><br>
+            <span class="subway"><strong>Nearest Station:</strong> Shiodome Station or Tsukijishijo Station (both Toei Oedo Line, ~7 min walk)</span>
+        </div>
+        <div id="day7-map" class="day-map"></div>
+        <p class="map-credit">Map data © <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap contributors</a> — pins are approximate; use the Google Maps links below for exact routing.</p>
+        <div class="verified-note">✅ Checked for Monday closures — Hamarikyu Gardens (closed only Dec 29–Jan 1), Tokyo Tower (open daily), and Minato Science Museum (closed only the <em>second</em> Monday of each month — Oct 26 is the fourth) are all open. This day is closing-week, so it's our last chance to do this loop.</div>
+        <div class="lunch-box lunch-flag">🍱 <strong>Lunch:</strong> Not yet arranged — flag for planning between the gardens and Tokyo Tower.</div>
+
+        <h2>Activity Details</h2>
+        <div class="activity-block">
+            <h3 class="activity-name">Hamarikyu Gardens</h3>
+            <p>A 350-year-old feudal lord's garden built around a genuine tidal pond — the water level actually rises and falls with Tokyo Bay. A teahouse sits on a small island in the pond, where you can sit for matcha and a seasonal sweet, plus wide lawns for kids to explore.</p>
+            <p class="price-tag">General: ¥300 | Ages 65+: ¥150 | Free for elementary-age and younger</p>
+            <div class="verified-note">✅ Confirmed current pricing.</div>
+        </div>
+        <div class="activity-block">
+            <h3 class="activity-name">Minato Science Museum</h3>
+            <p>A small, interactive science center in central Tokyo — hands-on exhibits that work well for curious kids without needing a full-day commitment. Permanent exhibits are free, so this is an easy, low-cost stop between the gardens and the tower.</p>
+            <p class="price-tag">Permanent exhibits: Free</p>
+            <p><em>Address:</em> 3-6-9 Toranomon &nbsp;|&nbsp; <span class="subway"><strong>Nearest Station:</strong> Toranomon Hills Station (Tokyo Metro Hibiya Line), ~4 min walk</span></p>
+            <p><a href="https://www.google.com/maps/search/Minato+Science+Museum+Tokyo" target="_blank">📍 View Minato Science Museum on Google Maps</a></p>
+        </div>
+        <div class="activity-block">
+            <h3 class="activity-name">Tokyo Tower</h3>
+            <p>Tokyo's original observation tower — a great way to close out the week with an orientation view of the whole city.</p>
+            <p class="price-tag">Main Deck (150m): Adults ¥1,500 | High school ¥1,200 | Elementary/Jr. High ¥900 | Ages 4+ (preschool) ¥600 | Under 4: Free</p>
+            <div class="verified-note">✅ Full tiered pricing confirmed for the Main Deck. (The Top Deck Tour to 250m runs about double this and needs advance booking — not included here since our plan is the Main Deck.)</div>
+            <p><a href="https://www.google.com/maps/search/Tokyo+Tower" target="_blank">📍 View Tokyo Tower on Google Maps</a></p>
+        </div>
+    </div></div>
+
+    <p class="site-footer">Made for our Tokyo Hub families with <span class="mark">♥</span> — Cultural Compass Adventures</p>
+
+</div>
+
+<script>
+    var dayLocations = {
+        day1: [
+            { lat: 35.6448, lng: 139.8600, name: "Meeting Point: Kasai-Rinkai Park Playground" },
+            { lat: 35.6461, lng: 139.8618, name: "Kasai-Rinkai-koen Station (JR Keiyo Line)" },
+            { lat: 35.6413, lng: 139.8571, name: "Tokyo Sea Life Park" },
+            { lat: 35.6416, lng: 139.8621, name: "Diamond and Flower Ferris Wheel" },
+            { lat: 35.6432, lng: 139.8535, name: "Bird Sanctuary" },
+            { lat: 35.6395, lng: 139.8500, name: "Kasai Marine Park Beach (Nishi Nagisa)" },
+            { lat: 35.6420, lng: 139.8595, name: "Crystal View Rest House" },
+            { lat: 35.6470, lng: 139.8490, name: "Canoe Slalom Centre" }
+        ],
+        day2: [
+            { lat: 35.6841, lng: 139.7573, name: "Meeting Point: Kikyo-mon Gate (tour check-in)" },
+            { lat: 35.6867, lng: 139.7649, name: "Otemachi Station" },
+            { lat: 35.6907, lng: 139.6924, name: "Shinjuku Chuo Park" },
+            { lat: 35.6912, lng: 139.6928, name: "Tochomae Station" }
+        ],
+        day3: [
+            { lat: 35.6358, lng: 139.8828, name: "Maihama Station (JR Keiyo Line)" },
+            { lat: 35.6267, lng: 139.8853, name: "Tokyo DisneySea Entrance Plaza" }
+        ],
+        day4: [
+            { lat: 35.6590, lng: 139.7005, name: "Meeting Point: Shibuya Station, Hachiko Exit" },
+            { lat: 35.6602, lng: 139.6982, name: "Mega Don Quijote Shibuya" },
+            { lat: 35.6608, lng: 139.6983, name: "Karaoke Pasela Shibuya" }
+        ],
+        day5: [
+            { lat: 35.7119, lng: 139.7967, name: "Meeting Point: Asakusa Station" },
+            { lat: 35.7108, lng: 139.7943, name: "Taikokan (Drum Museum)" },
+            { lat: 35.7115, lng: 139.7938, name: "Tokyo Samurai Ninja Museum" },
+            { lat: 35.7145, lng: 139.7907, name: "Ganso Sample-ya (Kappabashi)" }
+        ],
+        day6: [
+            { lat: 35.6247, lng: 139.5462, name: "Mukogaoka-Yuen Station (Odakyu Odawara Line)" },
+            { lat: 35.6206, lng: 139.5442, name: "Nihon Minkaen" }
+        ],
+        day7: [
+            { lat: 35.6595, lng: 139.7631, name: "Meeting Point: Hamarikyu Gardens, Otemon Gate" },
+            { lat: 35.6595, lng: 139.7615, name: "Shiodome / Tsukijishijo Station (Toei Oedo Line)" },
+            { lat: 35.6693, lng: 139.7495, name: "Minato Science Museum" },
+            { lat: 35.6586, lng: 139.7454, name: "Tokyo Tower" }
+        ]
+    };
+
+    var mapsInitialized = {};
+    var leafletReady = false;
+    var leafletFailed = false;
+    var pendingDay = 'day1';
+
+    function showMapFallback(dayId) {
+        var el = document.getElementById(dayId + '-map');
+        if (el && !el.dataset.fallbackShown) {
+            el.dataset.fallbackShown = '1';
+            el.style.display = 'flex';
+            el.style.alignItems = 'center';
+            el.style.justifyContent = 'center';
+            el.style.background = '#f4f4f4';
+            el.style.color = '#777';
+            el.style.fontSize = '0.9em';
+            el.style.textAlign = 'center';
+            el.style.padding = '20px';
+            el.textContent = 'Map preview isn\'t available in this view — use the Google Maps links on this page for exact locations and directions.';
+        }
+    }
+
+    function initMap(dayId) {
+        pendingDay = dayId;
+        if (leafletFailed) { showMapFallback(dayId); return; }
+        if (!leafletReady || typeof L === 'undefined') { return; }
+        if (mapsInitialized[dayId]) {
+            var m = mapsInitialized[dayId];
+            setTimeout(function () { m.invalidateSize(); }, 80);
+            return;
+        }
+        var locs = dayLocations[dayId];
+        var container = document.getElementById(dayId + '-map');
+        if (!locs || !container) return;
+        try {
+            var map = L.map(dayId + '-map').setView([locs[0].lat, locs[0].lng], 14);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+                attribution: '© OpenStreetMap contributors'
+            }).addTo(map);
+            var latlngs = [];
+            locs.forEach(function (loc) {
+                L.marker([loc.lat, loc.lng]).addTo(map).bindPopup('<b>' + loc.name + '</b>');
+                latlngs.push([loc.lat, loc.lng]);
+            });
+            if (latlngs.length > 1) {
+                map.fitBounds(L.latLngBounds(latlngs), { padding: [30, 30] });
+            }
+            mapsInitialized[dayId] = map;
+        } catch (e) {
+            showMapFallback(dayId);
+        }
+    }
+
+    function showTab(id, evt) {
+        document.querySelectorAll('.content').forEach(function (c) { c.classList.remove('active'); });
+        document.querySelectorAll('.tab').forEach(function (t) { t.classList.remove('active'); });
+        document.getElementById(id).classList.add('active');
+        evt.currentTarget.classList.add('active');
+        evt.currentTarget.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+        initMap(id);
+    }
+
+    // Load Leaflet's JS dynamically so a blocked/slow CDN request degrades
+    // gracefully instead of throwing "L is not defined" into the page.
+    (function loadLeaflet() {
+        var script = document.createElement('script');
+        script.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
+        script.integrity = 'sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=';
+        script.crossOrigin = '';
+        script.onload = function () {
+            leafletReady = true;
+            initMap(pendingDay);
+        };
+        script.onerror = function () {
+            leafletFailed = true;
+            showMapFallback(pendingDay);
+        };
+        document.head.appendChild(script);
+        // Safety timeout: if the CDN hasn't responded in 6s, fall back quietly.
+        setTimeout(function () {
+            if (!leafletReady) {
+                leafletFailed = true;
+                showMapFallback(pendingDay);
+            }
+        }, 6000);
+    })();
+</script>
+</body>
+</html>
