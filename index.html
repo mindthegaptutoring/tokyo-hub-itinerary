@@ -8,7 +8,7 @@
 <meta property="og:title" content="Tokyo Hub — Family Itinerary">
 <meta property="og:description" content="Cultural Compass Adventures · October 20–26, 2026">
 <meta property="og:type" content="website">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='46' fill='%23FBF6EC' stroke='%23C0552E' stroke-width='6'/%3E%3Cpath d='M50 20 L60 50 L50 80 L40 50 Z' fill='%23C0552E'/%3E%3Ccircle cx='50' cy='50' r='6' fill='%23FBF6EC'/%3E%3C/svg%3E">
+<link rel="icon" type="image/png" href="logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700;9..144,900&family=Karla:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
@@ -67,6 +67,16 @@
         opacity: 0.6;
     }
     .hero-inner { position: relative; max-width: 850px; margin: 0 auto; }
+    .hero-logo {
+        width: 86px; height: 86px;
+        border-radius: 18px;
+        object-fit: contain;
+        background: #ffffff;
+        padding: 8px;
+        border: 3px solid var(--accent);
+        box-shadow: 0 10px 24px -10px rgba(0,0,0,0.5);
+        margin-bottom: 16px;
+    }
     .hero-eyebrow {
         display: inline-flex; align-items: center; gap: 8px;
         font-family: 'Karla', sans-serif; font-weight: 700; font-size: 0.78em;
@@ -270,10 +280,8 @@
 
 <header class="hero">
     <div class="hero-inner">
-        <span class="hero-eyebrow">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M15 9l-3 6-3-2 3-6z" fill="currentColor" stroke="none"/></svg>
-            Cultural Compass Adventures
-        </span>
+        <img src="logo.png" alt="Cultural Compass Adventures" class="hero-logo">
+        <span class="hero-eyebrow">Cultural Compass Adventures</span>
         <h1>Tokyo Hub<br>Family Itinerary</h1>
         <p class="subtitle">A day-by-day guide for our week together · <strong>October 20–26, 2026</strong></p>
     </div>
@@ -315,7 +323,7 @@
         <h2>Full Week at a Glance</h2>
         <p style="color:var(--ink-soft);">Every meeting point and activity for the week, color-coded by day. Tap a pin for details, or use the day tabs above for full logistics on each stop.</p>
         <div id="overview-map" class="day-map overview-map"></div>
-        <p class="map-credit">Map data © <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap contributors</a> — pins are approximate; use the Google Maps links on each day's page for exact routing.</p>
+        <p class="map-credit">Map tiles © <a href="https://www.esri.com" target="_blank">Esri</a> — pins are approximate; use the Google Maps links on each day's page for exact routing.</p>
         <div class="legend">
             <span class="legend-item"><span class="legend-dot" style="background:#c0552e"></span>Day 1 · Kasai Park</span>
             <span class="legend-item"><span class="legend-dot" style="background:#2e6e63"></span>Day 2 · Palace &amp; Shinjuku</span>
@@ -336,7 +344,7 @@
             <span class="subway"><strong>Nearest Station:</strong> Kasai-Rinkai-koen Station (JR Keiyo Line)</span>
         </div>
         <div id="day1-map" class="day-map"></div>
-        <p class="map-credit">Map data © <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap contributors</a> — pins are approximate; use the Google Maps links below for exact routing.</p>
+        <p class="map-credit">Map tiles © <a href="https://www.esri.com" target="_blank">Esri</a> — pins are approximate; use the Google Maps links below for exact routing.</p>
         <div class="lunch-box lunch-set">🍱 <strong>Lunch:</strong> Picnic lunch or buy in the park — bring your own, or grab something from the on-site Starbucks, PARKLIFE CAFE & RESTAURANT, or the BBQ Square (reservation required for BBQ grills) near the station.</div>
 
         <p style="color:var(--ink-soft); font-style:italic;">This is an open, choose-your-own-adventure day — the whole park is free to enter and explore, and everything below is optional. Below is the full menu of what's here so the group can decide in the moment.</p>
@@ -406,7 +414,7 @@
             <span class="subway"><strong>Nearest Station:</strong> Otemachi Station (Tokyo Metro Chiyoda, Marunouchi & Tozai Lines; Toei Mita Line), then ~5–10 min walk to Kikyo-mon Gate</span>
         </div>
         <div id="day2-map" class="day-map"></div>
-        <p class="map-credit">Map data © <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap contributors</a> — pins are approximate; use the Google Maps links below for exact routing.</p>
+        <p class="map-credit">Map tiles © <a href="https://www.esri.com" target="_blank">Esri</a> — pins are approximate; use the Google Maps links below for exact routing.</p>
 
         <div class="verified-note">✅ Moved from Oct 26 to Oct 21 to fix a real conflict: the Imperial Household Agency's official guided tour only runs Tuesday–Saturday, and Oct 26 was a Monday. Wednesday keeps the 10:00 AM slot available.</div>
 
@@ -454,7 +462,7 @@
             <span class="subway"><strong>Nearest Station:</strong> Maihama Station (JR Keiyo Line), then a short walk or free Disney Resort Line monorail to the park entrance</span>
         </div>
         <div id="day3-map" class="day-map"></div>
-        <p class="map-credit">Map data © <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap contributors</a> — pins are approximate; use the Google Maps links below for exact routing.</p>
+        <p class="map-credit">Map tiles © <a href="https://www.esri.com" target="_blank">Esri</a> — pins are approximate; use the Google Maps links below for exact routing.</p>
         <div class="lunch-box lunch-set">🍱 <strong>Lunch:</strong> Handled inside the park — DisneySea has restaurants and food carts throughout, so each family is on their own for meals. No group reservation needed.</div>
 
         <h2>Activity Details</h2>
@@ -477,7 +485,7 @@
             <span class="subway"><strong>Nearest Station:</strong> Shibuya Station (JR Yamanote Line; Tokyo Metro Ginza, Hanzomon & Fukutoshin Lines)</span>
         </div>
         <div id="day4-map" class="day-map"></div>
-        <p class="map-credit">Map data © <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap contributors</a> — pins are approximate; use the Google Maps links below for exact routing.</p>
+        <p class="map-credit">Map tiles © <a href="https://www.esri.com" target="_blank">Esri</a> — pins are approximate; use the Google Maps links below for exact routing.</p>
         <div class="lunch-box lunch-flag">🍱 <strong>Lunch:</strong> Not yet arranged — Shibuya has endless options, but worth deciding on something concrete for the group.</div>
 
         <h2>Activity Details</h2>
@@ -509,7 +517,7 @@
             <span class="subway"><strong>Nearest Station:</strong> Asakusa Station (Tokyo Metro Ginza Line; Toei Asakusa Line; Tobu Skytree Line)</span>
         </div>
         <div id="day5-map" class="day-map"></div>
-        <p class="map-credit">Map data © <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap contributors</a> — pins are approximate; use the Google Maps links below for exact routing.</p>
+        <p class="map-credit">Map tiles © <a href="https://www.esri.com" target="_blank">Esri</a> — pins are approximate; use the Google Maps links below for exact routing.</p>
         <div class="lunch-box lunch-flag">🍱 <strong>Lunch:</strong> Not yet arranged — Nakamise shopping street has plenty of street food between the two activities, which could work well as a casual group lunch.</div>
 
         <h2>Activity Details</h2>
@@ -546,7 +554,7 @@
             <span class="subway"><strong>Nearest Station:</strong> Mukogaoka-Yuen Station (Odakyu Odawara Line), ~15 min walk to the museum</span>
         </div>
         <div id="day6-map" class="day-map"></div>
-        <p class="map-credit">Map data © <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap contributors</a> — pins are approximate; use the Google Maps links below for exact routing.</p>
+        <p class="map-credit">Map tiles © <a href="https://www.esri.com" target="_blank">Esri</a> — pins are approximate; use the Google Maps links below for exact routing.</p>
         <div class="lunch-box lunch-flag">🍱 <strong>Lunch:</strong> Not yet arranged — this is a more residential/suburban area than our other days, so families will need clear guidance on nearby options (or a heads-up to bring food), since there's less to grab on the fly.</div>
 
         <h2>Heritage & Craft Demos</h2>
@@ -568,7 +576,7 @@
             <span class="subway"><strong>Nearest Station:</strong> Shiodome Station or Tsukijishijo Station (both Toei Oedo Line, ~7 min walk)</span>
         </div>
         <div id="day7-map" class="day-map"></div>
-        <p class="map-credit">Map data © <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap contributors</a> — pins are approximate; use the Google Maps links below for exact routing.</p>
+        <p class="map-credit">Map tiles © <a href="https://www.esri.com" target="_blank">Esri</a> — pins are approximate; use the Google Maps links below for exact routing.</p>
         <div class="verified-note">✅ Checked for Monday closures — Hamarikyu Gardens (closed only Dec 29–Jan 1), Tokyo Tower (open daily), and Minato Science Museum (closed only the <em>second</em> Monday of each month — Oct 26 is the fourth) are all open. This day is closing-week, so it's our last chance to do this loop.</div>
         <div class="lunch-box lunch-flag">🍱 <strong>Lunch:</strong> Not yet arranged — flag for planning between the gardens and Tokyo Tower.</div>
 
@@ -689,9 +697,9 @@
         if (!container) return;
         try {
             var map = L.map('overview-map').setView([35.68, 139.75], 10);
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            L.tileLayer('https://server.arcgis.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
                 maxZoom: 19,
-                attribution: '© OpenStreetMap contributors'
+                attribution: 'Tiles &copy; Esri — Source: Esri, HERE, Garmin, USGS, Intermap, INCREMENT P, NRCan, Esri Japan, METI, Esri China (Hong Kong), Esri Korea, Esri (Thailand), NGCC, &copy; OpenStreetMap contributors, GIS User Community'
             }).addTo(map);
             var allLatLngs = [];
             Object.keys(dayLocations).forEach(function (dayId) {
@@ -732,9 +740,9 @@
         if (!locs || !container) return;
         try {
             var map = L.map(dayId + '-map').setView([locs[0].lat, locs[0].lng], 14);
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            L.tileLayer('https://server.arcgis.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
                 maxZoom: 19,
-                attribution: '© OpenStreetMap contributors'
+                attribution: 'Tiles &copy; Esri — Source: Esri, HERE, Garmin, USGS, Intermap, INCREMENT P, NRCan, Esri Japan, METI, Esri China (Hong Kong), Esri Korea, Esri (Thailand), NGCC, &copy; OpenStreetMap contributors, GIS User Community'
             }).addTo(map);
             var latlngs = [];
             locs.forEach(function (loc) {
