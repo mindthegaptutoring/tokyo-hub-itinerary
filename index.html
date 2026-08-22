@@ -148,6 +148,31 @@
     .tab.active .tab-date { color: #f6efe0; }
     .tab.active .tab-label { color: #cfc8b6; }
 
+    .tab-overview { background: var(--accent-soft); border-color: var(--accent); }
+    .tab-overview .tab-day { color: var(--accent-deep); }
+    .tab-overview .tab-date { font-size: 1.0em; }
+    .tab-overview:hover { border-color: var(--accent-deep); }
+    .tab-overview.active { background: var(--accent); border-color: var(--accent); }
+    .tab-overview.active .tab-day,
+    .tab-overview.active .tab-date,
+    .tab-overview.active .tab-label { color: #fff8f0; }
+
+    /* ---------- Overview map & legend ---------- */
+    .overview-map { height: 460px; }
+    .legend {
+        display: flex; flex-wrap: wrap;
+        gap: 8px 18px;
+        margin: 4px 0 18px;
+        font-size: 0.92em; color: var(--ink-soft);
+    }
+    .legend-item { display: flex; align-items: center; gap: 7px; }
+    .legend-dot {
+        width: 12px; height: 12px; border-radius: 50%;
+        display: inline-block; border: 2px solid #fff;
+        box-shadow: 0 0 0 1px var(--rule);
+        flex: 0 0 auto;
+    }
+
     /* ---------- Content ---------- */
     .content { display: none; }
     .content.active { display: block; animation: fadeIn .35s ease; }
@@ -258,7 +283,10 @@
 
     <div class="tabs-wrap">
         <div class="tabs">
-            <div class="tab active" onclick="showTab('day1', event)">
+            <div class="tab tab-overview active" onclick="showTab('overview', event)">
+                <span class="tab-day">Overview</span><span class="tab-date">All 7 Days</span><span class="tab-label">Full week map</span>
+            </div>
+            <div class="tab" onclick="showTab('day1', event)">
                 <span class="tab-day">Day 1</span><span class="tab-date">Oct 20</span><span class="tab-label">Kasai Park</span>
             </div>
             <div class="tab" onclick="showTab('day2', event)">
@@ -282,8 +310,25 @@
         </div>
     </div>
 
+    <!-- OVERVIEW -->
+    <div id="overview" class="content active"><div class="card">
+        <h2>Full Week at a Glance</h2>
+        <p style="color:var(--ink-soft);">Every meeting point and activity for the week, color-coded by day. Tap a pin for details, or use the day tabs above for full logistics on each stop.</p>
+        <div id="overview-map" class="day-map overview-map"></div>
+        <p class="map-credit">Map data © <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap contributors</a> — pins are approximate; use the Google Maps links on each day's page for exact routing.</p>
+        <div class="legend">
+            <span class="legend-item"><span class="legend-dot" style="background:#c0552e"></span>Day 1 · Kasai Park</span>
+            <span class="legend-item"><span class="legend-dot" style="background:#2e6e63"></span>Day 2 · Palace &amp; Shinjuku</span>
+            <span class="legend-item"><span class="legend-dot" style="background:#a97a1f"></span>Day 3 · DisneySea</span>
+            <span class="legend-item"><span class="legend-dot" style="background:#6a4c93"></span>Day 4 · Shibuya</span>
+            <span class="legend-item"><span class="legend-dot" style="background:#2f6f9c"></span>Day 5 · Asakusa</span>
+            <span class="legend-item"><span class="legend-dot" style="background:#3f7d3f"></span>Day 6 · Kawasaki</span>
+            <span class="legend-item"><span class="legend-dot" style="background:#a8402c"></span>Day 7 · Gardens &amp; Tower</span>
+        </div>
+    </div></div>
+
     <!-- DAY 1 -->
-    <div id="day1" class="content active"><div class="card">
+    <div id="day1" class="content"><div class="card">
         <h2>Kasai-Rinkai Park (Tuesday, October 20)</h2>
         <div class="meta-info">
             <strong>Meeting Time:</strong> 11:00 AM<br>
@@ -599,10 +644,29 @@
         ]
     };
 
+    var dayMeta = {
+        day1: { label: "Kasai Park", date: "Oct 20" },
+        day2: { label: "Palace & Shinjuku", date: "Oct 21" },
+        day3: { label: "DisneySea", date: "Oct 22" },
+        day4: { label: "Shibuya", date: "Oct 23" },
+        day5: { label: "Asakusa", date: "Oct 24" },
+        day6: { label: "Kawasaki", date: "Oct 25" },
+        day7: { label: "Gardens & Tower", date: "Oct 26" }
+    };
+    var dayColors = {
+        day1: "#c0552e",
+        day2: "#2e6e63",
+        day3: "#a97a1f",
+        day4: "#6a4c93",
+        day5: "#2f6f9c",
+        day6: "#3f7d3f",
+        day7: "#a8402c"
+    };
+
     var mapsInitialized = {};
     var leafletReady = false;
     var leafletFailed = false;
-    var pendingDay = 'day1';
+    var pendingDay = 'overview';
 
     function showMapFallback(dayId) {
         var el = document.getElementById(dayId + '-map');
@@ -620,6 +684,39 @@
         }
     }
 
+    function renderOverviewMap() {
+        var container = document.getElementById('overview-map');
+        if (!container) return;
+        try {
+            var map = L.map('overview-map').setView([35.68, 139.75], 10);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+                attribution: '© OpenStreetMap contributors'
+            }).addTo(map);
+            var allLatLngs = [];
+            Object.keys(dayLocations).forEach(function (dayId) {
+                var color = dayColors[dayId];
+                var meta = dayMeta[dayId];
+                dayLocations[dayId].forEach(function (loc) {
+                    L.circleMarker([loc.lat, loc.lng], {
+                        radius: 7,
+                        weight: 2,
+                        color: '#fff',
+                        fillColor: color,
+                        fillOpacity: 0.95
+                    }).addTo(map).bindPopup('<b>' + meta.label + ' (' + meta.date + ')</b><br>' + loc.name);
+                    allLatLngs.push([loc.lat, loc.lng]);
+                });
+            });
+            if (allLatLngs.length) {
+                map.fitBounds(L.latLngBounds(allLatLngs), { padding: [30, 30] });
+            }
+            mapsInitialized.overview = map;
+        } catch (e) {
+            showMapFallback('overview');
+        }
+    }
+
     function initMap(dayId) {
         pendingDay = dayId;
         if (leafletFailed) { showMapFallback(dayId); return; }
@@ -629,6 +726,7 @@
             setTimeout(function () { m.invalidateSize(); }, 80);
             return;
         }
+        if (dayId === 'overview') { renderOverviewMap(); return; }
         var locs = dayLocations[dayId];
         var container = document.getElementById(dayId + '-map');
         if (!locs || !container) return;
