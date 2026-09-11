@@ -697,7 +697,8 @@
         if (!container) return;
         try {
             var map = L.map('overview-map').setView([35.68, 139.75], 10);
-            L.tileLayer('https://server.arcgis.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
+            L.tileLayer('https://{s}.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
+                subdomains: ['server', 'services'],
                 maxZoom: 19,
                 attribution: 'Tiles &copy; Esri — Source: Esri, HERE, Garmin, USGS, Intermap, INCREMENT P, NRCan, Esri Japan, METI, Esri China (Hong Kong), Esri Korea, Esri (Thailand), NGCC, &copy; OpenStreetMap contributors, GIS User Community'
             }).addTo(map);
@@ -740,7 +741,8 @@
         if (!locs || !container) return;
         try {
             var map = L.map(dayId + '-map').setView([locs[0].lat, locs[0].lng], 14);
-            L.tileLayer('https://server.arcgis.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
+            L.tileLayer('https://{s}.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
+                subdomains: ['server', 'services'],
                 maxZoom: 19,
                 attribution: 'Tiles &copy; Esri — Source: Esri, HERE, Garmin, USGS, Intermap, INCREMENT P, NRCan, Esri Japan, METI, Esri China (Hong Kong), Esri Korea, Esri (Thailand), NGCC, &copy; OpenStreetMap contributors, GIS User Community'
             }).addTo(map);
