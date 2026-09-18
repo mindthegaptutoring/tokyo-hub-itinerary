@@ -51,8 +51,8 @@
 
     /* ---------- Hero ---------- */
     .hero {
-        background: linear-gradient(165deg, #2a2f2c 0%, #23262b 55%, #33291f 100%);
-        color: #f6efe0;
+        background: #ffffff;
+        color: var(--ink);
         padding: 56px 20px 40px;
         text-align: center;
         position: relative;
@@ -62,26 +62,20 @@
     .hero::before {
         content: "";
         position: absolute; inset: 0;
-        background-image: radial-gradient(circle, rgba(246,239,224,0.09) 1px, transparent 1px);
+        background-image: radial-gradient(circle, rgba(35,38,43,0.07) 1px, transparent 1px);
         background-size: 26px 26px;
-        opacity: 0.6;
     }
     .hero-inner { position: relative; max-width: 850px; margin: 0 auto; }
     .hero-logo {
-        width: 86px; height: 86px;
-        border-radius: 18px;
+        width: 90px; height: 90px;
         object-fit: contain;
-        background: #ffffff;
-        padding: 8px;
-        border: 3px solid var(--accent);
-        box-shadow: 0 10px 24px -10px rgba(0,0,0,0.5);
         margin-bottom: 16px;
     }
     .hero-eyebrow {
         display: inline-flex; align-items: center; gap: 8px;
         font-family: 'Karla', sans-serif; font-weight: 700; font-size: 0.78em;
         letter-spacing: 0.16em; text-transform: uppercase;
-        color: #e7b98f; margin-bottom: 14px;
+        color: var(--accent-deep); margin-bottom: 14px;
     }
     .hero-eyebrow svg { width: 16px; height: 16px; }
     .hero h1 {
@@ -91,16 +85,16 @@
         line-height: 1.08;
         margin: 0 0 14px;
         letter-spacing: -0.01em;
-        color: #f6efe0;
+        color: var(--ink);
     }
     .hero .subtitle {
         font-family: 'Karla', sans-serif;
         font-weight: 500;
         font-size: 1.05em;
-        color: #d8cfba;
+        color: var(--ink-soft);
         letter-spacing: 0.01em;
     }
-    .hero .subtitle strong { color: #f6efe0; font-weight: 700; }
+    .hero .subtitle strong { color: var(--ink); font-weight: 700; }
 
     .container { max-width: 850px; margin: auto; padding: 0 20px 60px; }
 
